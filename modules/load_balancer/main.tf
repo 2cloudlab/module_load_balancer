@@ -20,10 +20,10 @@ data "aws_availability_zones" "available" {
 }
 
 data "template_file" "shell" {
-  template = file("${path.module}/prepare.sh")
-  vars = {
-    server_port = local.server_port
-  }
+  template = file("${path.module}/service.sh")
+  #vars = {
+  #  server_port = local.server_port
+  #}
 }
 
 locals {
@@ -38,7 +38,7 @@ resource "aws_security_group" "alb" {
   ingress {
     from_port   = local.server_port
     to_port     = local.server_port
-    protocol    = "tcp"
+    protocol    = "TCP"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -53,7 +53,7 @@ resource "aws_security_group" "alb" {
 
 resource "aws_launch_template" "vm_template" {
   name_prefix   = "template_1"
-  image_id      = "ami-0278fe6949f6b1a06"
+  image_id      = "ami-06a46da680048c8ae"
   instance_type = "t2.micro"
   tag_specifications {
     resource_type = "instance"
@@ -62,7 +62,9 @@ resource "aws_launch_template" "vm_template" {
       Name = "asg_flag"
     }
   }
-
+  iam_instance_profile {
+    arn = aws_iam_instance_profile.ec2_profile.arn
+  }
   user_data              = base64encode(data.template_file.shell.rendered)
   vpc_security_group_ids = [aws_security_group.alb.id]
 }
@@ -140,6 +142,48 @@ resource "aws_lb_listener_rule" "asg" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.asg.arn
   }
+}
+
+data "aws_iam_policy_document" "instance-assume-role-policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "assume_role" {
+  name               = "assume_role"
+  path               = "/custom/"
+  assume_role_policy = data.aws_iam_policy_document.instance-assume-role-policy.json
+}
+
+resource "aws_iam_instance_profile" "ec2_profile" {
+  name = "ec2_profile"
+  role = aws_iam_role.assume_role.name
+}
+
+resource "aws_iam_role_policy" "dynamodb_policy_all" {
+  name = "dynamodb_policy_all"
+  role = aws_iam_role.assume_role.id
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "dynamodb:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
 }
 
 ###################### Output ######################################
