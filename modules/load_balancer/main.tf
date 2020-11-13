@@ -20,7 +20,7 @@ data "aws_availability_zones" "available" {
 }
 
 data "template_file" "shell" {
-  template = file("${path.module}/service.sh")
+  template = file("${path.module}/prepare.sh")
   #vars = {
   #  server_port = local.server_port
   #}
