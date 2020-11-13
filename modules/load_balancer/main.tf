@@ -46,12 +46,12 @@ variable "app_dir" {
 
 variable "envs" {
   type        = list
-  default = ["AWS_DEFAULT_REGION=ap-northeast-1", "USER_NAME=slz", "PASSWORD=abc", "TABLE_NAME=personal-articles-table", "INDEX_NAME=ContentGlobalIndex"]
+  default = ["USER_NAME=slz", "PASSWORD=abc", "TABLE_NAME=personal-articles-table", "INDEX_NAME=ContentGlobalIndex"]
 }
 
 locals {
   server_port                 = 80
-  envs_in_seq = format("-e %s", join(" -e ", var.envs))
+  envs_in_seq = format("-e %s", join(" -e ", concat(["AWS_DEFAULT_REGION=ap-northeast-1"], var.envs)))
   count_of_availability_zones = length(data.aws_availability_zones.available.names)
 }
 
