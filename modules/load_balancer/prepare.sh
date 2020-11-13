@@ -51,7 +51,7 @@ serverurl=unix:///tmp/supervisor.sock
 supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
 
 [program:gunicorn]
-command=$GUNICORN_BIN_NAME -b $UNIX_SOCK wsgiapp:wsgi_app
+command=$GUNICORN_BIN_NAME -e AWS_DEFAULT_REGION=ap-northeast-1 -e USER_NAME=slz -e PASSWORD=abc -e TABLE_NAME=personal-articles-table -e INDEX_NAME=ContentGlobalIndex -b $UNIX_SOCK wsgiapp:wsgi_app
 directory=$APP_PATH/www
 user=$USER
 autostart=true
@@ -128,6 +128,11 @@ http {
 
 echo "$gunicorn_config" > $APP_PATH/www/gunicorn.conf
 echo "$nginx_config" > /etc/nginx/nginx.conf
+
+echo "TABLE_NAME=personal-articles-table" >> /etc/environment
+echo "INDEX_NAME=ContentGlobalIndex" >> /etc/environment
+echo "USER_NAME=slz" >> /etc/environment
+echo "PASSWORD=abc" >> /etc/environment
 
 setenforce Permissive
 supervisord -c $APP_PATH/www/gunicorn.conf
