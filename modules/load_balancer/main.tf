@@ -21,9 +21,11 @@ data "aws_availability_zones" "available" {
 
 data "template_file" "shell" {
   template = file("${path.module}/prepare.sh")
-  #vars = {
-  #  server_port = local.server_port
-  #}
+  vars = {
+    download_url = "https://github.com/digolds/digolds_sample/archive/v0.0.1.tar.gz"
+    package_base_dir = "digolds_sample-0.0.1"
+    app_dir = "personal-blog"
+  }
 }
 
 locals {
