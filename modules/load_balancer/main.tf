@@ -49,9 +49,11 @@ variable "envs" {
   default = ["USER_NAME=slz", "PASSWORD=abc", "TABLE_NAME=personal-articles-table", "INDEX_NAME=ContentGlobalIndex"]
 }
 
+data "aws_region" "current" {}
+
 locals {
   server_port                 = 80
-  envs_in_seq = format("-e %s", join(" -e ", concat(["AWS_DEFAULT_REGION=ap-northeast-1"], var.envs)))
+  envs_in_seq = format("-e %s", join(" -e ", concat([format("AWS_DEFAULT_REGION=%s", data.aws_region.current.name)], var.envs)))
   count_of_availability_zones = length(data.aws_availability_zones.available.names)
 }
 
