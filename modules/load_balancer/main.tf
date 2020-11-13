@@ -22,14 +22,36 @@ data "aws_availability_zones" "available" {
 data "template_file" "shell" {
   template = file("${path.module}/prepare.sh")
   vars = {
-    download_url = "https://github.com/digolds/digolds_sample/archive/v0.0.1.tar.gz"
-    package_base_dir = "digolds_sample-0.0.1"
-    app_dir = "personal-blog"
+    download_url = var.download_url
+    package_base_dir = var.package_base_dir
+    app_dir = var.app_dir
+    envs = local.envs_in_seq
   }
+}
+
+variable "download_url" {
+  type        = string
+  default = "https://github.com/digolds/digolds_sample/archive/v0.0.1.tar.gz"
+}
+
+variable "package_base_dir" {
+  type        = string
+  default = "digolds_sample-0.0.1"
+}
+
+variable "app_dir" {
+  type        = string
+  default = "personal-blog"
+}
+
+variable "envs" {
+  type        = list
+  default = ["AWS_DEFAULT_REGION=ap-northeast-1", "USER_NAME=slz", "PASSWORD=abc", "TABLE_NAME=personal-articles-table", "INDEX_NAME=ContentGlobalIndex"]
 }
 
 locals {
   server_port                 = 80
+  envs_in_seq = format("-e %s", join(" -e ", var.envs))
   count_of_availability_zones = length(data.aws_availability_zones.available.names)
 }
 
