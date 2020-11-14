@@ -21,6 +21,7 @@ data "template_file" "shell" {
     package_base_dir = var.package_base_dir
     app_dir = var.app_dir
     envs = local.envs_in_seq
+    wsgi_app = var.wsgi_app
   }
 }
 
