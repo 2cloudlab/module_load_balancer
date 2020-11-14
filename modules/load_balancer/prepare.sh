@@ -45,7 +45,7 @@ serverurl=unix:///tmp/supervisor.sock
 [rpcinterface:supervisor]
 supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
 [program:gunicorn]
-command=$GUNICORN_BIN_NAME ${envs_in_seq} -b $UNIX_SOCK ${wsgi_app}
+command=$GUNICORN_BIN_NAME ${envs} -b $UNIX_SOCK ${wsgi_app}
 directory=$APP_PATH/www
 user=$USER
 autostart=true
