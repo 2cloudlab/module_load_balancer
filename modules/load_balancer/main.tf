@@ -44,6 +44,11 @@ variable "app_dir" {
   default = "personal-blog"
 }
 
+variable "wsgi_app" {
+  type        = string
+  default = "wsgiapp:wsgi_app"
+}
+
 variable "envs" {
   type        = list
   default = ["USER_NAME=slz", "PASSWORD=abc", "TABLE_NAME=personal-articles-table", "INDEX_NAME=ContentGlobalIndex"]
