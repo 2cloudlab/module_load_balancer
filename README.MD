@@ -23,6 +23,7 @@ module "load_balance" {
   package_base_dir         = "digolds_sample-0.0.1"
   app_dir = "personal-blog"
   envs     = ["USER_NAME=slz", "PASSWORD=abc", "TABLE_NAME=personal-articles-table", "INDEX_NAME=ContentGlobalIndex"]
+  wsgi_app = "wsgiapp:wsgi_app"
 }
 
 output "alb_dns_name" {
