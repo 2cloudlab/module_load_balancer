@@ -24,31 +24,6 @@ data "template_file" "shell" {
   }
 }
 
-variable "download_url" {
-  type        = string
-  default = "https://github.com/digolds/digolds_sample/archive/v0.0.1.tar.gz"
-}
-
-variable "package_base_dir" {
-  type        = string
-  default = "digolds_sample-0.0.1"
-}
-
-variable "app_dir" {
-  type        = string
-  default = "personal-blog"
-}
-
-variable "wsgi_app" {
-  type        = string
-  default = "wsgiapp:wsgi_app"
-}
-
-variable "envs" {
-  type        = list
-  default = ["USER_NAME=slz", "PASSWORD=abc", "TABLE_NAME=personal-articles-table", "INDEX_NAME=ContentGlobalIndex"]
-}
-
 data "aws_region" "current" {}
 
 locals {
