@@ -110,11 +110,6 @@ http {
 echo "$gunicorn_config" > $APP_PATH/www/gunicorn.conf
 echo "$nginx_config" > /etc/nginx/nginx.conf
 
-echo "TABLE_NAME=personal-articles-table" >> /etc/environment
-echo "INDEX_NAME=ContentGlobalIndex" >> /etc/environment
-echo "USER_NAME=slz" >> /etc/environment
-echo "PASSWORD=abc" >> /etc/environment
-
 setenforce Permissive
 supervisord -c $APP_PATH/www/gunicorn.conf
 # supervisorctl -c $APP_PATH/www/gunicorn.conf start gunicorn
