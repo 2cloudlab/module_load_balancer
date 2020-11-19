@@ -78,4 +78,4 @@ Wait about 5 minutes, because the preparation will involve updating the CentOS. 
 curl http://<alb_dns_name>
 ```
 
-**Note**: you should replace *alb_dns_name* with your domain. As you can see above testing, the ALB is listening port 80.
+**Note**: you should replace *alb_dns_name* with your domain. As you can see from the testing, the ALB is listening on port 80 and right now do not support https.
