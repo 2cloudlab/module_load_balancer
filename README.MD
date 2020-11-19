@@ -55,7 +55,7 @@ Pay more attention to the following variables:
 4. `envs` is the envrionment variables your web app need, such as *["USER_NAME=slz", "PASSWORD=abc"]*
 5. `wsgi_app` is WSGI callable object entry, if you define a callable object `my_wsgi_app` in *wsgiapp.py*, the value of `wsgi_app` should be `wsgiapp:my_wsgi_app`
 
-When you konw how to specify these variables and feed them well, then you can run the following command to provision the environment and up-and-running your WSGI-Compatible Python web app:
+When you konw how to specify these variables and feed them well, then you can run the following commands to provision the environment and up-and-running your WSGI-Compatible Python web app:
 
 ```bash
 terraform init
@@ -78,4 +78,10 @@ Wait about 5 minutes, because the preparation will involve updating the CentOS. 
 curl http://<alb_dns_name>
 ```
 
-**Note**: you should replace *alb_dns_name* with your domain. As you can see from the testing, the ALB is listening on port 80 and right now do not support https.
+If you can see the web app's response, it means everything is up and running.
+
+**Note**: you should replace *alb_dns_name* with your domain. As you can see from the testing, the ALB is listening on port 80 and right now do not support https. If you want to stop the web app, run the following command to destroy all the AWS resources:
+
+```bash
+terraform destroy
+```
