@@ -17,11 +17,11 @@ data "aws_availability_zones" "available" {
 data "template_file" "shell" {
   template = file("${path.module}/prepare.sh")
   vars = {
-    download_url = var.download_url
+    download_url     = var.download_url
     package_base_dir = var.package_base_dir
-    app_dir = var.app_dir
-    envs = local.envs_in_seq
-    wsgi_app = var.wsgi_app
+    app_dir          = var.app_dir
+    envs             = local.envs_in_seq
+    wsgi_app         = var.wsgi_app
   }
 }
 
@@ -29,8 +29,9 @@ data "aws_region" "current" {}
 
 locals {
   server_port                 = 80
-  envs_in_seq = format("-e %s", join(" -e ", concat([format("AWS_DEFAULT_REGION=%s", data.aws_region.current.name)], var.envs)))
+  envs_in_seq                 = format("-e %s", join(" -e ", concat([format("AWS_DEFAULT_REGION=%s", data.aws_region.current.name)], var.envs)))
   count_of_availability_zones = length(data.aws_availability_zones.available.names)
+  choose_az_number = var.min_instances_number == 0
 }
 
 resource "aws_security_group" "alb" {
@@ -53,10 +54,31 @@ resource "aws_security_group" "alb" {
   }
 }
 
+# https://letslearndevops.com/2018/08/23/terraform-get-latest-centos-ami/
+# https://wiki.centos.org/Cloud/AWS
+data "aws_ami" "centos" {
+  owners      = ["679593333241"]
+  most_recent = true
+  filter {
+    name   = "name"
+    values = ["CentOS Linux 7 x86_64 HVM EBS *"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+}
+
 resource "aws_launch_template" "vm_template" {
   name_prefix   = "template_1"
-  image_id      = "ami-06a46da680048c8ae"
-  instance_type = "t2.micro"
+  image_id      = data.aws_ami.centos.id
+  instance_type = var.instance_type
   tag_specifications {
     resource_type = "instance"
 
@@ -77,9 +99,9 @@ resource "aws_autoscaling_group" "example" {
   target_group_arns = [aws_lb_target_group.asg.arn]
   health_check_type = "ELB"
 
-  desired_capacity = local.count_of_availability_zones
-  max_size         = local.count_of_availability_zones + 1
-  min_size         = local.count_of_availability_zones
+  desired_capacity = local.choose_az_number ? local.count_of_availability_zones : var.desired_instances_number
+  max_size         = local.choose_az_number ? local.count_of_availability_zones : var.max_instances_number
+  min_size         = local.choose_az_number ? local.count_of_availability_zones : var.min_instances_number
 
   launch_template {
     id      = aws_launch_template.vm_template.id
