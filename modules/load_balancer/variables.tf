@@ -1,3 +1,4 @@
+# required variables
 
 variable "download_url" {
   type = string
@@ -15,8 +16,11 @@ variable "wsgi_app" {
   type = string
 }
 
+# optional variables with default value
+
 variable "envs" {
   type = list
+  default = []
 }
 
 variable "min_instances_number" {
